@@ -1,0 +1,89 @@
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.orders-list {
+  display: grid;
+  gap: 18px;
+}
+
+.order-card {
+  display: grid;
+  gap: 18px;
+}
+
+.order-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.order-top h2 {
+  margin: 0 0 6px;
+}
+
+.order-top p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.status-badge {
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-size: 13px;
+}
+
+.order-items {
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+.order-item div {
+  display: grid;
+  gap: 4px;
+}
+
+.order-item span {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+}
+
+.empty-orders {
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.empty-orders p {
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 650px) {
+  .orders-header,
+  .order-top,
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

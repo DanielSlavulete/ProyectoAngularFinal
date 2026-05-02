@@ -1,0 +1,57 @@
+<section class="admin-page">
+  <div class="admin-page-header">
+    <h1>Dashboard administrador</h1>
+    <p>Resumen general de usuarios, tableros, pedidos y planes.</p>
+  </div>
+
+  <div class="stats-grid">
+    @for (stat of stats; track stat.label) {
+      <article class="stat-card">
+        <span>{{ stat.label }}</span>
+        <strong>{{ stat.value }}</strong>
+        <p>{{ stat.description }}</p>
+      </article>
+    }
+  </div>
+
+  <div class="dashboard-grid">
+    <article class="card admin-card">
+      <h2>Últimos pedidos</h2>
+
+      <div class="recent-orders">
+        @for (order of recentOrders; track order.id) {
+          <div class="recent-order">
+            <div>
+              <strong>Pedido #{{ order.id }}</strong>
+              <span>{{ order.user }} · {{ order.createdAt }}</span>
+            </div>
+
+            <div class="recent-order-right">
+              <strong>{{ order.total | currency:'EUR' }}</strong>
+              <span>{{ order.status }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="card admin-card">
+      <h2>Planes más comprados</h2>
+
+      <div class="popular-plans">
+        @for (plan of popularPlans; track plan.name) {
+          <div class="popular-plan">
+            <div>
+              <strong>{{ plan.name }}</strong>
+              <span>{{ plan.purchases }} compras</span>
+            </div>
+
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="plan.purchases * 10"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+  </div>
+</section>

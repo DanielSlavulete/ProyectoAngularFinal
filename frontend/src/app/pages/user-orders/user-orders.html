@@ -1,0 +1,56 @@
+<section class="page">
+  <div class="page-header orders-header">
+    <div>
+      <h1>Mis pedidos</h1>
+      <p>Historial de compras simuladas realizadas en la aplicación.</p>
+    </div>
+
+    <a routerLink="/profile" class="btn btn-secondary">
+      Volver al perfil
+    </a>
+  </div>
+
+  @if (orders.length === 0) {
+    <div class="card empty-orders">
+      <h2>No tienes pedidos todavía</h2>
+      <p>Cuando compres un plan, aparecerá aquí.</p>
+
+      <a routerLink="/plans" class="btn">Ver planes</a>
+    </div>
+  } @else {
+    <div class="orders-list">
+      @for (order of orders; track order.id) {
+        <article class="card order-card">
+          <div class="order-top">
+            <div>
+              <h2>Pedido #{{ order.id }}</h2>
+              <p>{{ order.createdAt }} · {{ order.paymentMethod }}</p>
+            </div>
+
+            <span class="status-badge">
+              {{ order.status }}
+            </span>
+          </div>
+
+          <div class="order-items">
+            @for (item of order.items; track item.featureKey) {
+              <div class="order-item">
+                <div>
+                  <strong>{{ item.name }}</strong>
+                  <span>{{ item.featureKey }}</span>
+                </div>
+
+                <strong>{{ item.price | currency:'EUR' }}</strong>
+              </div>
+            }
+          </div>
+
+          <div class="order-total">
+            <span>Total</span>
+            <strong>{{ order.total | currency:'EUR' }}</strong>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

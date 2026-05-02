@@ -1,0 +1,67 @@
+<section class="auth-page">
+  <div class="auth-card">
+    <h1>Crear cuenta</h1>
+    <p>Regístrate para empezar a crear tus tableros.</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Nombre</label>
+        <input id="name" type="text" formControlName="name" placeholder="Tu nombre">
+
+        @if (registerForm.get('name')?.touched && registerForm.get('name')?.hasError('required')) {
+          <small>El nombre es obligatorio.</small>
+        }
+
+        @if (registerForm.get('name')?.touched && registerForm.get('name')?.hasError('minlength')) {
+          <small>El nombre debe tener al menos 2 caracteres.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="tu@email.com">
+
+        @if (registerForm.get('email')?.touched && registerForm.get('email')?.hasError('required')) {
+          <small>El email es obligatorio.</small>
+        }
+
+        @if (registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')) {
+          <small>Introduce un email válido.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input id="password" type="password" formControlName="password" placeholder="Mínimo 6 caracteres">
+
+        @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')) {
+          <small>La contraseña es obligatoria.</small>
+        }
+
+        @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')) {
+          <small>La contraseña debe tener al menos 6 caracteres.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmar contraseña</label>
+        <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="Repite la contraseña">
+
+        @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.hasError('required')) {
+          <small>Confirma la contraseña.</small>
+        }
+
+        @if (registerForm.get('confirmPassword')?.hasError('passwordMismatch')) {
+          <small>Las contraseñas no coinciden.</small>
+        }
+      </div>
+
+      <button type="submit" class="btn full-btn">Registrarse</button>
+    </form>
+
+    <p class="auth-footer">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login">Inicia sesión</a>
+    </p>
+  </div>
+</section>

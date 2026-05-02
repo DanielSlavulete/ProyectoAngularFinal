@@ -1,0 +1,81 @@
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 24px;
+}
+
+.plan-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-card::before {
+  content: "";
+  position: absolute;
+  height: 6px;
+  inset: 0 0 auto 0;
+  background: #2563eb;
+}
+
+.plan-tag {
+  width: fit-content;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 999px;
+  padding: 6px 10px;
+}
+
+.plan-card h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.plan-description {
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+  min-height: 48px;
+}
+
+.plan-price {
+  font-size: 34px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.plan-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.plan-benefits li {
+  color: #374151;
+}
+
+.plan-benefits li::before {
+  content: "✓";
+  color: #059669;
+  font-weight: 800;
+  margin-right: 8px;
+}
+
+.plan-btn {
+  margin-top: auto;
+  width: 100%;
+}
+.plan-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}

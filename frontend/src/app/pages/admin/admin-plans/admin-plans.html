@@ -1,0 +1,93 @@
+<section class="admin-page">
+  <div class="admin-page-header plans-header">
+    <div>
+      <h1>Planes</h1>
+      <p>Gestiona los planes disponibles para los usuarios.</p>
+    </div>
+
+    <button type="button" class="btn">
+      + Crear plan
+    </button>
+  </div>
+
+  <div class="card table-card">
+    <div class="table-actions">
+      <div class="form-group">
+        <label for="search">Buscar plan</label>
+        <input
+          id="search"
+          type="text"
+          placeholder="Buscar por nombre o feature key..."
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="state">Estado</label>
+        <select id="state">
+          <option>Todos</option>
+          <option>Activos</option>
+          <option>Inactivos</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Plan</th>
+            <th>Descripción</th>
+            <th>Feature Key</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th>Creado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (plan of plans; track plan.id) {
+            <tr>
+              <td>#{{ plan.id }}</td>
+
+              <td>
+                <strong>{{ plan.name }}</strong>
+              </td>
+
+              <td>{{ plan.description }}</td>
+
+              <td>
+                <span class="feature-pill">{{ plan.featureKey }}</span>
+              </td>
+
+              <td>
+                <strong>{{ plan.price | currency:'EUR' }}</strong>
+              </td>
+
+              <td>
+                <span class="state-pill" [class.inactive]="!plan.isActive">
+                  {{ plan.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+
+              <td>{{ plan.createdAt }}</td>
+
+              <td>
+                <div class="actions">
+                  <button type="button" class="mini-btn">Editar</button>
+
+                  @if (plan.isActive) {
+                    <button type="button" class="mini-btn warning">Desactivar</button>
+                  } @else {
+                    <button type="button" class="mini-btn">Activar</button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

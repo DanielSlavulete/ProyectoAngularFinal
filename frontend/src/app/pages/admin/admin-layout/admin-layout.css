@@ -1,0 +1,69 @@
+.admin-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+}
+
+.admin-sidebar {
+  background: #111827;
+  color: white;
+  border-radius: 18px;
+  padding: 24px;
+  min-height: calc(100vh - 140px);
+  position: sticky;
+  top: 96px;
+}
+
+.admin-sidebar-title {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 28px;
+}
+
+.admin-sidebar-title span {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.admin-sidebar-title small {
+  color: #9ca3af;
+}
+
+.admin-menu {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-menu a {
+  color: #d1d5db;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.admin-menu a:hover {
+  background: #1f2937;
+  color: white;
+}
+
+.admin-content {
+  min-width: 0;
+}
+
+@media (max-width: 850px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    min-height: auto;
+    position: static;
+  }
+
+  .admin-menu {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}

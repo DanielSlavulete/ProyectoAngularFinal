@@ -1,0 +1,64 @@
+<section class="page">
+  <div class="page-header">
+    <h1>Carrito</h1>
+    <p>Revisa los planes seleccionados antes de continuar con el pago simulado.</p>
+  </div>
+
+  @if (cart.items().length === 0) {
+    <div class="card empty-cart">
+      <h2>Tu carrito está vacío</h2>
+      <p>Añade algún plan para mejorar tu experiencia en la aplicación.</p>
+
+      <a routerLink="/plans" class="btn">
+        Ver planes
+      </a>
+    </div>
+  } @else {
+    <div class="cart-layout">
+      <div class="cart-items">
+        @for (item of cart.items(); track item.id) {
+          <article class="cart-item card">
+            <div>
+              <h2>{{ item.name }}</h2>
+              <p>{{ item.featureKey }}</p>
+            </div>
+
+            <div class="cart-item-info">
+              <strong>{{ item.price | currency:'EUR' }}</strong>
+
+              <button
+                type="button"
+                class="btn btn-danger"
+                (click)="cart.removeItem(item.id)"
+              >
+                Eliminar
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+
+      <aside class="cart-summary card">
+        <h2>Resumen</h2>
+
+        <div class="summary-row">
+          <span>Planes seleccionados</span>
+          <strong>{{ cart.totalItems() }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Total</span>
+          <strong>{{ cart.totalPrice() | currency:'EUR' }}</strong>
+        </div>
+
+        <a routerLink="/checkout" class="btn checkout-btn">
+          Continuar al pago
+        </a>
+
+        <button type="button" class="btn btn-secondary clear-btn" (click)="cart.clearCart()">
+          Vaciar carrito
+        </button>
+      </aside>
+    </div>
+  }
+</section>

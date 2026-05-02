@@ -1,0 +1,86 @@
+<section class="page">
+  <div class="page-header">
+    <h1>Mi perfil</h1>
+    <p>Consulta tus datos, personalización y planes activos.</p>
+  </div>
+
+  <div class="profile-layout">
+    <article class="card profile-card">
+      <div class="avatar">
+        @if (user.avatarUrl) {
+          <img [src]="user.avatarUrl" alt="Avatar de usuario">
+        } @else {
+          <span>{{ user.name.charAt(0) }}</span>
+        }
+      </div>
+
+      <div class="profile-info">
+        <h2 [style.color]="user.nameColor">
+          {{ user.name }}
+        </h2>
+
+        <p>{{ user.email }}</p>
+
+        <span class="role-badge">
+          {{ user.role }}
+        </span>
+
+        @if (user.nameBadge) {
+          <span class="premium-badge">
+            {{ user.nameBadge }}
+          </span>
+        }
+      </div>
+    </article>
+
+    <article class="card profile-details">
+      <h2>Datos de la cuenta</h2>
+
+      <div class="detail-row">
+        <span>Nombre</span>
+        <strong>{{ user.name }}</strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Email</span>
+        <strong>{{ user.email }}</strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Rol</span>
+        <strong>{{ user.role }}</strong>
+      </div>
+
+      <div class="profile-actions">
+        <a routerLink="/profile/orders" class="btn">
+          Ver mis pedidos
+        </a>
+
+        <a routerLink="/plans" class="btn btn-secondary">
+          Ver planes
+        </a>
+      </div>
+    </article>
+  </div>
+
+  <section class="card plans-section">
+    <div class="section-title">
+      <h2>Planes activos</h2>
+      <p>Estos planes desbloquean opciones extra en tu cuenta.</p>
+    </div>
+
+    @if (activePlans.length === 0) {
+      <p class="empty-text">Todavía no tienes planes activos.</p>
+    } @else {
+      <div class="active-plans-grid">
+        @for (plan of activePlans; track plan.featureKey) {
+          <article class="active-plan">
+            <h3>{{ plan.name }}</h3>
+            <p>{{ plan.featureKey }}</p>
+            <span>Comprado el {{ plan.purchasedAt }}</span>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</section>

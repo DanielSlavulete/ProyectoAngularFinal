@@ -1,0 +1,55 @@
+<section class="page">
+  <div class="page-header home-header">
+    <div>
+      <h1>Mis tableros</h1>
+      <p>Organiza tus notas, tareas y checklists en tableros personalizados.</p>
+    </div>
+
+    <button type="button" class="btn">
+      + Crear tablero
+    </button>
+  </div>
+
+  <div class="home-actions card">
+    <div class="form-group search-box">
+      <label for="search">Buscar tablero</label>
+      <input id="search" type="text" placeholder="Buscar por nombre...">
+    </div>
+
+    <div class="form-group sort-box">
+      <label for="sort">Ordenar por</label>
+      <select id="sort">
+        <option>Más recientes</option>
+        <option>Nombre A-Z</option>
+        <option>Más notas</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="boards-grid">
+    @for (board of boards; track board.id) {
+      <article class="board-card">
+        <div class="board-cover" [style.background]="board.color">
+          <span>{{ board.backgroundTheme }}</span>
+        </div>
+
+        <div class="board-content">
+          <div class="board-title-row">
+            <h2>{{ board.title }}</h2>
+            <span class="board-notes">{{ board.notesCount }} notas</span>
+          </div>
+
+          <p>{{ board.description }}</p>
+
+          <div class="board-footer">
+            <span>Actualizado: {{ board.updatedAt }}</span>
+
+            <a [routerLink]="['/boards', board.id]" class="btn btn-secondary">
+              Abrir
+            </a>
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</section>

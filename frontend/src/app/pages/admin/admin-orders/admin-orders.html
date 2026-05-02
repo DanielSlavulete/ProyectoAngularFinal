@@ -1,0 +1,74 @@
+<section class="admin-page">
+  <div class="admin-page-header orders-header">
+    <div>
+      <h1>Pedidos</h1>
+      <p>Consulta todas las compras simuladas realizadas por los usuarios.</p>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <div class="table-actions">
+      <div class="form-group">
+        <label for="search">Buscar pedido</label>
+        <input
+          id="search"
+          type="text"
+          placeholder="Buscar por usuario, email o número de pedido..."
+        >
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Planes</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Método</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (order of orders; track order.id) {
+            <tr>
+              <td>#{{ order.id }}</td>
+
+              <td>
+                <strong>{{ order.user }}</strong>
+              </td>
+
+              <td>{{ order.email }}</td>
+
+              <td>{{ order.itemsCount }}</td>
+
+              <td>
+                <strong>{{ order.total | currency:'EUR' }}</strong>
+              </td>
+
+              <td>
+                <span class="status-pill">{{ order.status }}</span>
+              </td>
+
+              <td>{{ order.paymentMethod }}</td>
+
+              <td>{{ order.createdAt }}</td>
+
+              <td>
+                <div class="actions">
+                  <button type="button" class="mini-btn">Ver</button>
+                  <button type="button" class="mini-btn danger">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

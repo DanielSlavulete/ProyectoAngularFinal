@@ -1,0 +1,31 @@
+@if (auth.isLoggedIn()) {
+  <header class="main-header">
+    <div class="header-logo" routerLink="/home">
+      TaskBoard
+    </div>
+
+    <nav class="header-nav">
+      <a routerLink="/home">Home</a>
+      <a routerLink="/plans">Planes</a>
+
+      @if (auth.isAdmin()) {
+        <a routerLink="/admin/dashboard" class="admin-link">Admin</a>
+      }
+    </nav>
+
+    <div class="header-actions">
+      <a routerLink="/cart" class="icon-link" title="Carrito">
+        🛒
+        <span class="cart-badge">{{ cart.totalItems() }}</span>
+      </a>
+
+      <a routerLink="/profile" class="profile-link" title="Perfil">
+        👤
+      </a>
+
+      <button type="button" class="logout-btn" (click)="auth.logout()">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+}

@@ -1,0 +1,40 @@
+<section class="page">
+  <div class="page-header">
+    <h1>Planes</h1>
+    <p>Mejora tu experiencia con planes cosméticos y funciones extra.</p>
+  </div>
+
+  <div class="plans-grid">
+    @for (plan of plans; track plan.id) {
+      <article class="plan-card">
+        <div class="plan-tag">{{ plan.tag }}</div>
+
+        <h2>{{ plan.name }}</h2>
+        <p class="plan-description">{{ plan.description }}</p>
+
+        <div class="plan-price">
+          {{ plan.price }} €
+        </div>
+
+        <ul class="plan-benefits">
+          @for (benefit of plan.benefits; track benefit) {
+            <li>{{ benefit }}</li>
+          }
+        </ul>
+
+        <button
+            type="button"
+            class="btn plan-btn"
+            [disabled]="isInCart(plan.id)"
+            (click)="addToCart(plan)"
+            >
+            @if (isInCart(plan.id)) {
+                Añadido
+            } @else {
+                Añadir al carrito
+            }
+        </button>
+      </article>
+    }
+  </div>
+</section>
