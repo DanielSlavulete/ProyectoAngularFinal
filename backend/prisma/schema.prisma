@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model board_members {
+  id         BigInt   @id @default(autoincrement())
+  board_id   BigInt
+  user_id    BigInt
+  role       String   @default("'MEMBER'") @db.VarChar
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  boards     boards   @relation(fields: [board_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model boards {
+  id               BigInt          @id @default(autoincrement())
+  title            String          @db.VarChar
+  description      String?
+  color            String          @default("'default'") @db.VarChar
+  background_theme String          @default("'default'") @db.VarChar
+  owner_id         BigInt
+  updated_at       DateTime        @default(now()) @db.Timestamptz(6)
+  created_at       DateTime        @default(now()) @db.Timestamptz(6)
+  board_members    board_members[]
+  users            users           @relation(fields: [owner_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notes            notes[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model check_items {
+  id          BigInt   @id @default(autoincrement())
+  note_id     BigInt
+  text        String   @db.VarChar
+  is_checked  Boolean  @default(false)
+  order_index Int      @default(0)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  notes       notes    @relation(fields: [note_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model notes {
+  id          BigInt        @id @default(autoincrement())
+  board_id    BigInt
+  title       String        @db.VarChar
+  content     String?
+  color       String        @default("'default'") @db.VarChar
+  order_index Int           @default(0)
+  updated_at  DateTime      @default(now()) @db.Timestamptz(6)
+  created_at  DateTime      @default(now()) @db.Timestamptz(6)
+  check_items check_items[]
+  boards      boards        @relation(fields: [board_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model order_items {
+  id         BigInt   @id @default(autoincrement())
+  order_id   BigInt
+  plan_id    BigInt
+  quantity   Int      @default(1)
+  unit_price Decimal  @db.Decimal
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  orders     orders   @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  plans      plans    @relation(fields: [plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model orders {
+  id             BigInt        @id @default(autoincrement())
+  user_id        BigInt
+  total          Decimal       @db.Decimal
+  status         String        @default("'PAID'") @db.VarChar
+  payment_method String        @default("'CARD'") @db.VarChar
+  created_at     DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime      @default(now()) @db.Timestamptz(6)
+  order_items    order_items[]
+  users          users         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_plans     user_plans[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model plans {
+  id          BigInt        @id @default(autoincrement())
+  name        String        @db.VarChar
+  description String?
+  price       Decimal       @db.Decimal
+  feature_key String        @unique @db.VarChar
+  is_active   Boolean       @default(true)
+  updated_at  DateTime      @default(now()) @db.Timestamptz(6)
+  created_at  DateTime      @default(now()) @db.Timestamptz(6)
+  order_items order_items[]
+  user_plans  user_plans[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model user_plans {
+  id           BigInt   @id @default(autoincrement())
+  user_id      BigInt
+  plan_id      BigInt
+  order_id     BigInt
+  purchased_at DateTime @default(now()) @db.Timestamptz(6)
+  orders       orders   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  plans        plans    @relation(fields: [plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users        users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id            BigInt          @id @default(autoincrement())
+  name          String          @db.VarChar
+  email         String          @unique @db.VarChar
+  password      String          @db.VarChar
+  role          String          @default("'USER'") @db.VarChar
+  avatar_url    String?         @db.VarChar
+  name_color    String?         @db.VarChar
+  name_badge    String?         @db.VarChar
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime        @default(now()) @db.Timestamptz(6)
+  board_members board_members[]
+  boards        boards[]
+  orders        orders[]
+  user_plans    user_plans[]
+}

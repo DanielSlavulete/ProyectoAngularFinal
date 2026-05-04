@@ -26,10 +26,12 @@
         }
       </div>
 
-      <button type="submit" class="btn full-btn">Entrar</button>
+      @if (errorMessage) {
+        <small class="form-error">{{ errorMessage }}</small>
+      }
 
-      <button type="button" class="btn btn-secondary full-btn admin-test-btn" (click)="loginAsAdmin()">
-        Entrar como admin
+      <button type="submit" class="btn full-btn" [disabled]="isLoading">
+        {{ isLoading ? 'Entrando...' : 'Entrar' }}
       </button>
     </form>
 

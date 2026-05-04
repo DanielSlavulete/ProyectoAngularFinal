@@ -5,48 +5,107 @@
       <p>Organiza tus notas, tareas y checklists en tableros personalizados.</p>
     </div>
 
-    <button type="button" class="btn">
-      + Crear tablero
-    </button>
+    @if (!showCreateForm()) {
+      <button type="button" class="btn" (click)="openCreateForm()">
+        + Crear tablero
+      </button>
+    } @else {
+      <button type="button" class="btn btn-secondary" (click)="closeForm()">
+        Cancelar
+      </button>
+    }
   </div>
 
-  <div class="home-actions card">
-    <div class="form-group search-box">
-      <label for="search">Buscar tablero</label>
-      <input id="search" type="text" placeholder="Buscar por nombre...">
-    </div>
+  @if (showCreateForm()) {
+    <form class="card create-board-form" [formGroup]="boardForm" (ngSubmit)="saveBoard()">
+      <h2>{{ editingBoard() ? 'Editar tablero' : 'Crear tablero' }}</h2>
 
-    <div class="form-group sort-box">
-      <label for="sort">Ordenar por</label>
-      <select id="sort">
-        <option>Más recientes</option>
-        <option>Nombre A-Z</option>
-        <option>Más notas</option>
-      </select>
-    </div>
-  </div>
+      <div class="form-group">
+        <label for="title">Título del tablero</label>
+        <input id="title" type="text" formControlName="title" placeholder="Ej: Proyecto final Angular">
+
+        @if (boardForm.get('title')?.touched && boardForm.get('title')?.hasError('required')) {
+          <small>El título es obligatorio.</small>
+        }
+
+        @if (boardForm.get('title')?.touched && boardForm.get('title')?.hasError('minlength')) {
+          <small>El título debe tener al menos 2 caracteres.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="description">Descripción</label>
+        <textarea id="description" formControlName="description" placeholder="Describe para qué usarás este tablero"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="color">Color</label>
+          <input id="color" type="color" formControlName="color">
+        </div>
+
+        <div class="form-group">
+          <label for="background_theme">Tema</label>
+          <select id="background_theme" formControlName="background_theme">
+            <option value="Azul">Azul</option>
+            <option value="Morado">Morado</option>
+            <option value="Verde">Verde</option>
+            <option value="Rojo">Rojo</option>
+            <option value="Naranja">Naranja</option>
+            <option value="Gris">Gris</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn" [disabled]="isSaving()">
+        {{ isSaving() ? 'Guardando...' : (editingBoard() ? 'Guardar cambios' : 'Guardar tablero') }}
+      </button>
+    </form>
+  }
+
+  @if (isLoading()) {
+    <p>Cargando tableros...</p>
+  }
+
+  @if (errorMessage()) {
+    <p>{{ errorMessage() }}</p>
+  }
+
+  @if (!isLoading() && !errorMessage() && boards().length === 0) {
+    <p>Todavía no tienes tableros. Crea tu primer tablero.</p>
+  }
 
   <div class="boards-grid">
-    @for (board of boards; track board.id) {
+    @for (board of boards(); track board.id) {
       <article class="board-card">
         <div class="board-cover" [style.background]="board.color">
-          <span>{{ board.backgroundTheme }}</span>
+          <span>{{ board.background_theme }}</span>
         </div>
 
         <div class="board-content">
           <div class="board-title-row">
             <h2>{{ board.title }}</h2>
-            <span class="board-notes">{{ board.notesCount }} notas</span>
+            <span class="board-notes">{{ board.notes_count }} notas</span>
           </div>
 
-          <p>{{ board.description }}</p>
+          <p>{{ board.description || 'Sin descripción' }}</p>
 
           <div class="board-footer">
-            <span>Actualizado: {{ board.updatedAt }}</span>
+            <span>Actualizado: {{ board.updated_at | date:'short' }}</span>
 
-            <a [routerLink]="['/boards', board.id]" class="btn btn-secondary">
-              Abrir
-            </a>
+            <div class="board-actions">
+              <a [routerLink]="['/boards', board.id]" class="btn btn-secondary">
+                Abrir
+              </a>
+
+              <button type="button" class="btn btn-secondary" (click)="openEditForm(board)">
+                Editar
+              </button>
+
+              <button type="button" class="btn btn-danger" (click)="deleteBoard(board)">
+                Eliminar
+              </button>
+            </div>
           </div>
         </div>
       </article>

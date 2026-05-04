@@ -56,8 +56,14 @@
         }
       </div>
 
-      <button type="submit" class="btn full-btn">Registrarse</button>
-    </form>
+      @if (errorMessage) {
+        <small class="form-error">{{ errorMessage }}</small>
+      }
+
+      <button type="submit" class="btn full-btn" [disabled]="isLoading">
+        {{ isLoading ? 'Registrando...' : 'Registrarse' }}
+      </button>
+      </form>
 
     <p class="auth-footer">
       ¿Ya tienes cuenta?

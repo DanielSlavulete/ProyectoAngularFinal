@@ -1,0 +1,135 @@
+.board-detail-header {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.board-detail-cover {
+  min-height: 120px;
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 700;
+}
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.note-form {
+  margin-bottom: 1.5rem;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.note-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  border-top: 6px solid #facc15;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.note-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.note-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 1rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.2);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+
+.cdk-drag-animating {
+  transition: transform 180ms ease;
+}
+
+.notes-grid.cdk-drop-list-dragging .note-card:not(.cdk-drag-placeholder) {
+  transition: transform 180ms ease;
+}
+
+.note-card {
+  cursor: grab;
+}
+
+.note-card:active {
+  cursor: grabbing;
+}
+
+.checklist {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.checklist h4 {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.check-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.check-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.check-item label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.checked {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.check-delete-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.add-check-item {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.add-check-item input {
+  flex: 1;
+}

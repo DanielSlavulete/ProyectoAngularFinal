@@ -4,13 +4,25 @@
     <p>Mejora tu experiencia con planes cosméticos y funciones extra.</p>
   </div>
 
+  @if (isLoading()) {
+    <p>Cargando planes...</p>
+  }
+
+  @if (errorMessage()) {
+    <p>{{ errorMessage() }}</p>
+  }
+
+  @if (!isLoading() && !errorMessage() && plans().length === 0) {
+    <p>No hay planes disponibles por el momento.</p>
+  }
+
   <div class="plans-grid">
-    @for (plan of plans; track plan.id) {
+    @for (plan of plans(); track plan.id) {
       <article class="plan-card">
         <div class="plan-tag">{{ plan.tag }}</div>
 
         <h2>{{ plan.name }}</h2>
-        <p class="plan-description">{{ plan.description }}</p>
+        <p class="plan-description">{{ plan.description || 'Sin descripción' }}</p>
 
         <div class="plan-price">
           {{ plan.price }} €
@@ -23,16 +35,16 @@
         </ul>
 
         <button
-            type="button"
-            class="btn plan-btn"
-            [disabled]="isInCart(plan.id)"
-            (click)="addToCart(plan)"
-            >
-            @if (isInCart(plan.id)) {
-                Añadido
-            } @else {
-                Añadir al carrito
-            }
+          type="button"
+          class="btn plan-btn"
+          [disabled]="isInCart(plan.id)"
+          (click)="addToCart(plan)"
+        >
+          @if (isInCart(plan.id)) {
+            Añadido
+          } @else {
+            Añadir al carrito
+          }
         </button>
       </article>
     }

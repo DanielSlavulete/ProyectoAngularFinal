@@ -12,7 +12,9 @@ export interface CartItem {
   providedIn: 'root'
 })
 export class Cart {
-  private itemsSignal = signal<CartItem[]>([]);
+  private readonly storageKey = 'cart';
+
+  private itemsSignal = signal<CartItem[]>(this.getStoredCart());
 
   items = this.itemsSignal.asReadonly();
 
@@ -33,22 +35,38 @@ export class Cart {
       return;
     }
 
-    this.itemsSignal.set([
+    const updatedItems = [
       ...currentItems,
       {
         ...item,
         quantity: 1
       }
-    ]);
+    ];
+
+    this.setItems(updatedItems);
   }
 
   removeItem(planId: number): void {
-    this.itemsSignal.set(
-      this.itemsSignal().filter(item => item.id !== planId)
-    );
+    const updatedItems = this.itemsSignal().filter(item => item.id !== planId);
+    this.setItems(updatedItems);
   }
 
   clearCart(): void {
-    this.itemsSignal.set([]);
+    this.setItems([]);
+  }
+
+  private setItems(items: CartItem[]): void {
+    this.itemsSignal.set(items);
+    localStorage.setItem(this.storageKey, JSON.stringify(items));
+  }
+
+  private getStoredCart(): CartItem[] {
+    const storedCart = localStorage.getItem(this.storageKey);
+
+    if (!storedCart) {
+      return [];
+    }
+
+    return JSON.parse(storedCart);
   }
 }
