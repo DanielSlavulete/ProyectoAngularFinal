@@ -10,7 +10,15 @@
     </a>
   </div>
 
-  @if (orders.length === 0) {
+  @if (isLoading()) {
+    <p>Cargando pedidos...</p>
+  }
+
+  @if (errorMessage()) {
+    <p>{{ errorMessage() }}</p>
+  }
+
+  @if (!isLoading() && !errorMessage() && orders().length === 0) {
     <div class="card empty-orders">
       <h2>No tienes pedidos todavía</h2>
       <p>Cuando compres un plan, aparecerá aquí.</p>
@@ -19,12 +27,12 @@
     </div>
   } @else {
     <div class="orders-list">
-      @for (order of orders; track order.id) {
+      @for (order of orders(); track order.id) {
         <article class="card order-card">
           <div class="order-top">
             <div>
               <h2>Pedido #{{ order.id }}</h2>
-              <p>{{ order.createdAt }} · {{ order.paymentMethod }}</p>
+              <p>{{ order.created_at | date:'short' }} · {{ order.payment_method }}</p>
             </div>
 
             <span class="status-badge">
@@ -33,14 +41,14 @@
           </div>
 
           <div class="order-items">
-            @for (item of order.items; track item.featureKey) {
+            @for (item of order.items; track item.id) {
               <div class="order-item">
                 <div>
-                  <strong>{{ item.name }}</strong>
-                  <span>{{ item.featureKey }}</span>
+                  <strong>{{ item.plan?.name || 'Plan eliminado' }}</strong>
+                  <span>{{ item.plan?.feature_key || 'Sin feature key' }}</span>
                 </div>
 
-                <strong>{{ item.price | currency:'EUR' }}</strong>
+                <strong>{{ item.unit_price | currency:'EUR' }}</strong>
               </div>
             }
           </div>

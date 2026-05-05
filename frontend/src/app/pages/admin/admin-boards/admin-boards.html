@@ -7,60 +7,59 @@
   </div>
 
   <div class="card table-card">
-    <div class="table-actions">
-      <div class="form-group">
-        <label for="search">Buscar tablero</label>
-        <input id="search" type="text" placeholder="Buscar por título o propietario...">
-      </div>
+    @if (isLoading()) {
+      <p>Cargando tableros...</p>
+    }
 
-      <div class="form-group">
-        <label for="sort">Ordenar</label>
-        <select id="sort">
-          <option>Más recientes</option>
-          <option>Nombre A-Z</option>
-          <option>Más notas</option>
-          <option>Más miembros</option>
-        </select>
-      </div>
-    </div>
+    @if (errorMessage()) {
+      <p>{{ errorMessage() }}</p>
+    }
 
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Tablero</th>
-            <th>Propietario</th>
-            <th>Notas</th>
-            <th>Miembros</th>
-            <th>Fondo</th>
-            <th>Creado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
+    @if (!isLoading() && !errorMessage() && boards().length === 0) {
+      <p>No hay tableros registrados.</p>
+    }
 
-        <tbody>
-          @for (board of boards; track board.id) {
+    @if (!isLoading() && !errorMessage() && boards().length > 0) {
+      <div class="table-wrapper">
+        <table>
+          <thead>
             <tr>
-              <td>#{{ board.id }}</td>
-              <td>
-                <strong>{{ board.title }}</strong>
-              </td>
-              <td>{{ board.owner }}</td>
-              <td>{{ board.notesCount }}</td>
-              <td>{{ board.membersCount }}</td>
-              <td>{{ board.backgroundTheme }}</td>
-              <td>{{ board.createdAt }}</td>
-              <td>
-                <div class="actions">
-                  <button type="button" class="mini-btn">Ver</button>
-                  <button type="button" class="mini-btn danger">Eliminar</button>
-                </div>
-              </td>
+              <th>ID</th>
+              <th>Tablero</th>
+              <th>Propietario</th>
+              <th>Email</th>
+              <th>Notas</th>
+              <th>Fondo</th>
+              <th>Creado</th>
+              <th>Actualizado</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+
+          <tbody>
+            @for (board of boards(); track board.id) {
+              <tr>
+                <td>#{{ board.id }}</td>
+
+                <td>
+                  <strong>{{ board.title }}</strong>
+                </td>
+
+                <td>{{ board.owner?.name || 'Sin propietario' }}</td>
+
+                <td>{{ board.owner?.email || '-' }}</td>
+
+                <td>{{ board.notes_count }}</td>
+
+                <td>{{ board.background_theme }}</td>
+
+                <td>{{ board.created_at | date:'shortDate' }}</td>
+
+                <td>{{ board.updated_at | date:'short' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </div>
 </section>

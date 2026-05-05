@@ -1,5 +1,7 @@
 const prisma = require('../config/prisma');
 
+// Formatea una nota antes de enviarla al frontend.
+// Convertimos BigInt a string y añadimos el número de checklist items.
 function formatNote(note) {
   return {
     id: note.id.toString(),
@@ -15,6 +17,8 @@ function formatNote(note) {
 }
 
 async function checkBoardOwnership(boardId, userId) {
+  // Comprueba que el tablero existe y pertenece al usuario logueado.
+  // userId viene del token JWT validado previamente por authMiddleware.
   const board = await prisma.boards.findFirst({
     where: {
       id: BigInt(boardId),
@@ -32,6 +36,7 @@ async function checkBoardOwnership(boardId, userId) {
 }
 
 async function getNotesByBoard(boardId, userId) {
+  // Antes de devolver las notas, comprobamos que el usuario sea propietario del tablero.
   await checkBoardOwnership(boardId, userId);
 
   const notes = await prisma.notes.findMany({
@@ -56,6 +61,7 @@ async function getNotesByBoard(boardId, userId) {
 async function createNote(boardId, userId, data) {
   await checkBoardOwnership(boardId, userId);
 
+  // Calcula el siguiente order_index para que la nueva nota se coloque al final.
   const lastNote = await prisma.notes.findFirst({
     where: {
       board_id: BigInt(boardId),
@@ -88,6 +94,7 @@ async function createNote(boardId, userId, data) {
 }
 
 async function getNoteById(noteId, userId) {
+  // Busca una nota concreta asegurando que pertenece a un tablero del usuario.
   const note = await prisma.notes.findFirst({
     where: {
       id: BigInt(noteId),
@@ -114,6 +121,7 @@ async function getNoteById(noteId, userId) {
 }
 
 async function updateNote(noteId, userId, data) {
+  // Reutilizamos getNoteById para validar permisos antes de actualizar.
   await getNoteById(noteId, userId);
 
   const note = await prisma.notes.update({
@@ -139,6 +147,8 @@ async function updateNote(noteId, userId, data) {
 }
 
 async function deleteNote(noteId, userId) {
+  // Validamos permisos antes de borrar.
+  // Los check_items relacionados se eliminan por la relación onDelete: Cascade.
   await getNoteById(noteId, userId);
 
   await prisma.notes.delete({
@@ -153,6 +163,8 @@ async function deleteNote(noteId, userId) {
 }
 
 async function reorderNotes(userId, notes) {
+  // Función usada por Angular CDK Drag & Drop.
+  // Recibe el nuevo orden de las notas y actualiza order_index en Supabase.
   if (!Array.isArray(notes)) {
     const error = new Error('Formato de notas inválido');
     error.statusCode = 400;
@@ -165,6 +177,7 @@ async function reorderNotes(userId, notes) {
     };
   }
 
+  // Validamos que cada nota tenga id, order_index y pertenezca al usuario logueado.
   for (const noteItem of notes) {
     if (!noteItem.id && noteItem.id !== 0) {
       const error = new Error('Cada nota debe tener un id');
@@ -194,6 +207,8 @@ async function reorderNotes(userId, notes) {
     }
   }
 
+  // Actualizamos todas las posiciones en una transacción:
+  // o se guarda todo el nuevo orden, o no se guarda nada.
   await prisma.$transaction(
     notes.map((noteItem) =>
       prisma.notes.update({

@@ -1,5 +1,7 @@
 const prisma = require('../config/prisma');
 
+// Formatea un tablero antes de enviarlo al frontend.
+// Convertimos BigInt a string y añadimos el número de notas asociadas.
 function formatBoard(board) {
   return {
     id: board.id.toString(),
@@ -15,6 +17,8 @@ function formatBoard(board) {
 }
 
 async function getBoardsByUser(userId) {
+  // Devuelve solo los tableros del usuario logueado.
+  // userId viene del token JWT validado previamente por authMiddleware.
   const boards = await prisma.boards.findMany({
     where: {
       owner_id: BigInt(userId),
@@ -35,6 +39,7 @@ async function getBoardsByUser(userId) {
 }
 
 async function getBoardById(boardId, userId) {
+  // Busca un tablero concreto asegurando que pertenece al usuario logueado.
   const board = await prisma.boards.findFirst({
     where: {
       id: BigInt(boardId),
@@ -59,6 +64,8 @@ async function getBoardById(boardId, userId) {
 }
 
 async function createBoard(userId, data) {
+  // Crea un tablero asociado al usuario autenticado.
+  // owner_id se obtiene del token, no desde el frontend.
   const board = await prisma.boards.create({
     data: {
       title: data.title,
@@ -80,6 +87,8 @@ async function createBoard(userId, data) {
 }
 
 async function updateBoard(boardId, userId, data) {
+  // Primero comprobamos que el tablero existe y pertenece al usuario.
+  // Así evitamos que un usuario pueda editar tableros de otro.
   await getBoardById(boardId, userId);
 
   const board = await prisma.boards.update({
@@ -106,6 +115,8 @@ async function updateBoard(boardId, userId, data) {
 }
 
 async function deleteBoard(boardId, userId) {
+  // Validamos permisos antes de eliminar.
+  // Las notas y check_items asociados se eliminan por las relaciones en cascada.
   await getBoardById(boardId, userId);
 
   await prisma.boards.delete({

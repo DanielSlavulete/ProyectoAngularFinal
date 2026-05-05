@@ -1,49 +1,42 @@
-import { Component } from '@angular/core';
-
-interface AdminUser {
-  id: number;
-  name: string;
-  email: string;
-  role: 'USER' | 'ADMIN';
-  boardsCount: number;
-  plansCount: number;
-  createdAt: string;
-}
+import { DatePipe } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { AdminService, AdminUser } from '../../../services/admin';
 
 @Component({
   selector: 'app-admin-users',
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './admin-users.html',
   styleUrl: './admin-users.css'
 })
-export class AdminUsers {
-  users: AdminUser[] = [
-    {
-      id: 1,
-      name: 'Daniel Slavulete',
-      email: 'daniel@test.com',
-      role: 'USER',
-      boardsCount: 3,
-      plansCount: 2,
-      createdAt: '02/05/2026'
-    },
-    {
-      id: 2,
-      name: 'Admin Test',
-      email: 'admin@test.com',
-      role: 'ADMIN',
-      boardsCount: 0,
-      plansCount: 0,
-      createdAt: '02/05/2026'
-    },
-    {
-      id: 3,
-      name: 'Laura Pérez',
-      email: 'laura@test.com',
-      role: 'USER',
-      boardsCount: 5,
-      plansCount: 1,
-      createdAt: '03/05/2026'
-    }
-  ];
+export class AdminUsers implements OnInit {
+  private adminService = inject(AdminService);
+
+  // Signals para manejar el estado reactivo de la tabla de usuarios.
+  // users almacena los usuarios reales obtenidos desde Supabase.
+  users = signal<AdminUser[]>([]);
+  isLoading = signal(false);
+  errorMessage = signal('');
+
+  ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  loadUsers(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+
+    // Llamada al endpoint de administración para consultar todos los usuarios.
+    // Esta petición está protegida: requiere token JWT y rol ADMIN.
+    this.adminService.getUsers().subscribe({
+      next: (response) => {
+        this.users.set(response.users);
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        console.error('Error cargando usuarios admin', error);
+        this.errorMessage.set(error.error?.message || 'No se pudieron cargar los usuarios');
+        this.isLoading.set(false);
+      }
+    });
+  }
 }

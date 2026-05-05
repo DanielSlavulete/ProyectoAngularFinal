@@ -17,6 +17,7 @@ export class Register {
   errorMessage = '';
   isLoading = false;
 
+  // Formulario reactivo con validaciones básicas antes de enviar datos al backend.
   registerForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
@@ -25,6 +26,8 @@ export class Register {
   });
 
   onSubmit(): void {
+    // Si el formulario no cumple las validaciones, marcamos los campos como tocados
+    // para mostrar los mensajes de error en la vista.
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
@@ -32,6 +35,7 @@ export class Register {
 
     const { name, email, password, confirmPassword } = this.registerForm.getRawValue();
 
+    // Validación específica del frontend para comprobar que ambas contraseñas coinciden.
     if (password !== confirmPassword) {
       this.registerForm.get('confirmPassword')?.setErrors({ passwordMismatch: true });
       this.registerForm.get('confirmPassword')?.markAsTouched();
@@ -41,13 +45,18 @@ export class Register {
     this.errorMessage = '';
     this.isLoading = true;
 
+    // Registro real contra el backend.
+    // Si se crea el usuario correctamente, el backend devuelve usuario + token JWT.
     this.auth.register({
       name: name!,
       email: email!,
       password: password!
     }).subscribe({
       next: (response) => {
+        // Guardamos la sesión: token en localStorage y usuario en el servicio Auth.
         this.auth.saveSession(response);
+
+        // Después del registro, el usuario entra directamente a la zona privada.
         this.router.navigate(['/home']);
       },
       error: (error) => {

@@ -14,14 +14,19 @@ export class Home implements OnInit {
   private boardService = inject(BoardService);
   private fb = inject(FormBuilder);
 
+  // Signals para gestionar el estado reactivo de la página:
+  // tableros cargados, carga y errores.
   boards = signal<Board[]>([]);
   isLoading = signal(false);
   errorMessage = signal('');
 
+  // Signals para controlar el formulario de crear/editar tablero.
   showCreateForm = signal(false);
   isSaving = signal(false);
   editingBoard = signal<Board | null>(null);
 
+  // Formulario reactivo para crear y editar tableros.
+  // El mismo formulario se reutiliza tanto para POST como para PUT.
   boardForm = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
@@ -37,6 +42,8 @@ export class Home implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
+    // Carga los tableros reales del usuario logueado desde el backend.
+    // El token JWT se añade automáticamente mediante el interceptor.
     this.boardService.getBoards().subscribe({
       next: (response) => {
         this.boards.set(response.boards);
@@ -51,6 +58,7 @@ export class Home implements OnInit {
   }
 
   openCreateForm(): void {
+    // Entramos en modo creación: no hay tablero seleccionado para editar.
     this.editingBoard.set(null);
 
     this.boardForm.reset({
@@ -64,6 +72,7 @@ export class Home implements OnInit {
   }
 
   openEditForm(board: Board): void {
+    // Entramos en modo edición y precargamos el formulario con los datos del tablero.
     this.editingBoard.set(board);
 
     this.boardForm.reset({
@@ -77,6 +86,7 @@ export class Home implements OnInit {
   }
 
   closeForm(): void {
+    // Cerramos el formulario y limpiamos cualquier estado de edición.
     this.showCreateForm.set(false);
     this.editingBoard.set(null);
 
@@ -109,8 +119,10 @@ export class Home implements OnInit {
     const boardToEdit = this.editingBoard();
 
     if (boardToEdit) {
+      // Si editingBoard tiene valor, actualizamos un tablero existente.
       this.boardService.updateBoard(boardToEdit.id, boardData).subscribe({
         next: (response) => {
+          // Actualizamos el signal reemplazando solo el tablero modificado.
           this.boards.update(currentBoards =>
             currentBoards.map(board =>
               board.id === response.board.id ? response.board : board
@@ -130,8 +142,10 @@ export class Home implements OnInit {
       return;
     }
 
+    // Si no estamos editando, creamos un tablero nuevo.
     this.boardService.createBoard(boardData).subscribe({
       next: (response) => {
+        // Añadimos el nuevo tablero al principio de la lista sin recargar toda la página.
         this.boards.update(currentBoards => [response.board, ...currentBoards]);
 
         this.isSaving.set(false);
@@ -152,6 +166,7 @@ export class Home implements OnInit {
       return;
     }
 
+    // Elimina el tablero en el backend y después lo quitamos del signal local.
     this.boardService.deleteBoard(board.id).subscribe({
       next: () => {
         this.boards.update(currentBoards =>

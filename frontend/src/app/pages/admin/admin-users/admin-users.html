@@ -1,73 +1,71 @@
 <section class="admin-page">
-  <div class="admin-page-header users-header">
+  <div class="admin-page-header">
     <div>
       <h1>Usuarios</h1>
-      <p>Consulta y gestiona los usuarios registrados en la aplicación.</p>
+      <p>Consulta todos los usuarios registrados en la aplicación.</p>
     </div>
-
-    <button type="button" class="btn">
-      + Crear usuario
-    </button>
   </div>
 
   <div class="card table-card">
-    <div class="table-actions">
-      <div class="form-group">
-        <label for="search">Buscar usuario</label>
-        <input id="search" type="text" placeholder="Buscar por nombre o email...">
-      </div>
+    @if (isLoading()) {
+      <p>Cargando usuarios...</p>
+    }
 
-      <div class="form-group">
-        <label for="role">Filtrar rol</label>
-        <select id="role">
-          <option>Todos</option>
-          <option>USER</option>
-          <option>ADMIN</option>
-        </select>
-      </div>
-    </div>
+    @if (errorMessage()) {
+      <p>{{ errorMessage() }}</p>
+    }
 
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Usuario</th>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Tableros</th>
-            <th>Planes</th>
-            <th>Creado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
+    @if (!isLoading() && !errorMessage() && users().length === 0) {
+      <p>No hay usuarios registrados.</p>
+    }
 
-        <tbody>
-          @for (user of users; track user.id) {
+    @if (!isLoading() && !errorMessage() && users().length > 0) {
+      <div class="table-wrapper">
+        <table>
+          <thead>
             <tr>
-              <td>#{{ user.id }}</td>
-              <td>
-                <strong>{{ user.name }}</strong>
-              </td>
-              <td>{{ user.email }}</td>
-              <td>
-                <span class="role-pill" [class.admin]="user.role === 'ADMIN'">
-                  {{ user.role }}
-                </span>
-              </td>
-              <td>{{ user.boardsCount }}</td>
-              <td>{{ user.plansCount }}</td>
-              <td>{{ user.createdAt }}</td>
-              <td>
-                <div class="actions">
-                  <button type="button" class="mini-btn">Editar</button>
-                  <button type="button" class="mini-btn danger">Eliminar</button>
-                </div>
-              </td>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Color nombre</th>
+              <th>Badge</th>
+              <th>Creado</th>
+              <th>Actualizado</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+
+          <tbody>
+            @for (user of users(); track user.id) {
+              <tr>
+                <td>#{{ user.id }}</td>
+
+                <td>
+                  <strong [style.color]="user.name_color || '#111827'">
+                    {{ user.name }}
+                  </strong>
+                </td>
+
+                <td>{{ user.email }}</td>
+
+                <td>
+                  <span class="status-badge">
+                    {{ user.role }}
+                  </span>
+                </td>
+
+                <td>{{ user.name_color || '-' }}</td>
+
+                <td>{{ user.name_badge || '-' }}</td>
+
+                <td>{{ user.created_at | date:'shortDate' }}</td>
+
+                <td>{{ user.updated_at | date:'short' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </div>
 </section>

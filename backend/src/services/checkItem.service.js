@@ -1,5 +1,7 @@
 const prisma = require('../config/prisma');
 
+// Formatea un elemento de checklist antes de enviarlo al frontend.
+// Convertimos BigInt a string para evitar problemas al devolver JSON.
 function formatCheckItem(checkItem) {
   return {
     id: checkItem.id.toString(),
@@ -13,6 +15,8 @@ function formatCheckItem(checkItem) {
 }
 
 async function checkNoteOwnership(noteId, userId) {
+  // Comprueba que la nota existe y pertenece a un tablero del usuario logueado.
+  // userId viene del token JWT validado previamente por authMiddleware.
   const note = await prisma.notes.findFirst({
     where: {
       id: BigInt(noteId),
@@ -32,6 +36,7 @@ async function checkNoteOwnership(noteId, userId) {
 }
 
 async function getCheckItemById(checkItemId, userId) {
+  // Busca un elemento concreto del checklist asegurando que pertenece al usuario.
   const checkItem = await prisma.check_items.findFirst({
     where: {
       id: BigInt(checkItemId),
@@ -53,6 +58,7 @@ async function getCheckItemById(checkItemId, userId) {
 }
 
 async function getCheckItemsByNote(noteId, userId) {
+  // Antes de devolver los checks, validamos que el usuario tenga acceso a la nota.
   await checkNoteOwnership(noteId, userId);
 
   const checkItems = await prisma.check_items.findMany({
@@ -70,6 +76,7 @@ async function getCheckItemsByNote(noteId, userId) {
 async function createCheckItem(noteId, userId, data) {
   await checkNoteOwnership(noteId, userId);
 
+  // Calcula el siguiente order_index para colocar el nuevo check al final.
   const lastCheckItem = await prisma.check_items.findFirst({
     where: {
       note_id: BigInt(noteId),
@@ -94,6 +101,7 @@ async function createCheckItem(noteId, userId, data) {
 }
 
 async function updateCheckItem(checkItemId, userId, data) {
+  // Reutilizamos getCheckItemById para validar permisos antes de editar.
   await getCheckItemById(checkItemId, userId);
 
   const checkItem = await prisma.check_items.update({
@@ -110,8 +118,11 @@ async function updateCheckItem(checkItemId, userId, data) {
 }
 
 async function toggleCheckItem(checkItemId, userId) {
+  // Primero obtenemos el elemento actual para saber si está marcado o no.
   const existingCheckItem = await getCheckItemById(checkItemId, userId);
 
+  // Cambia is_checked al valor contrario.
+  // Es la parte que permite marcar/desmarcar y que en Angular se vea tachado.
   const checkItem = await prisma.check_items.update({
     where: {
       id: BigInt(checkItemId),
@@ -126,6 +137,7 @@ async function toggleCheckItem(checkItemId, userId) {
 }
 
 async function deleteCheckItem(checkItemId, userId) {
+  // Validamos permisos antes de eliminar el elemento del checklist.
   await getCheckItemById(checkItemId, userId);
 
   await prisma.check_items.delete({

@@ -17,12 +17,15 @@ export class Login {
   errorMessage = '';
   isLoading = false;
 
+  // Formulario reactivo para iniciar sesión.
+  // Validamos que el email tenga formato correcto y que la contraseña no esté vacía.
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
   });
 
   onSubmit(): void {
+    // Si el formulario no es válido, marcamos los campos para mostrar errores en el HTML.
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -33,13 +36,18 @@ export class Login {
 
     const { email, password } = this.loginForm.getRawValue();
 
+    // Login real contra el backend.
+    // Si las credenciales son correctas, el backend devuelve usuario + token JWT.
     this.auth.login({
       email: email!,
       password: password!
     }).subscribe({
       next: (response) => {
+        // Guardamos sesión en localstorage junto a token y datos basicos:
         this.auth.saveSession(response);
 
+        // Redirigimos según el rol
+        // Si es ADMIN entra al panel, si no entra a home
         if (response.user.role === 'ADMIN') {
           this.router.navigate(['/admin/dashboard']);
         } else {

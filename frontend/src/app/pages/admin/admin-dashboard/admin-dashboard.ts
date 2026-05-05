@@ -1,5 +1,5 @@
-import { CurrencyPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { AdminService } from '../../../services/admin';
 
 interface AdminStat {
   label: string;
@@ -7,80 +7,75 @@ interface AdminStat {
   description: string;
 }
 
-interface RecentOrder {
-  id: number;
-  user: string;
-  total: number;
-  status: 'PAID';
-  createdAt: string;
-}
-
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [CurrencyPipe],
+  imports: [],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })
-export class AdminDashboard {
-  stats: AdminStat[] = [
-    {
-      label: 'Usuarios',
-      value: '24',
-      description: 'Usuarios registrados'
-    },
-    {
-      label: 'Tableros',
-      value: '68',
-      description: 'Tableros creados'
-    },
-    {
-      label: 'Pedidos',
-      value: '17',
-      description: 'Compras simuladas'
-    },
-    {
-      label: 'Ingresos',
-      value: '129,83 €',
-      description: 'Total simulado'
-    }
-  ];
+export class AdminDashboard implements OnInit {
+  private adminService = inject(AdminService);
 
-  recentOrders: RecentOrder[] = [
-    {
-      id: 1,
-      user: 'Daniel Slavulete',
-      total: 11.98,
-      status: 'PAID',
-      createdAt: '02/05/2026'
-    },
-    {
-      id: 2,
-      user: 'Laura Pérez',
-      total: 9.99,
-      status: 'PAID',
-      createdAt: '03/05/2026'
-    },
-    {
-      id: 3,
-      user: 'Admin Test',
-      total: 4.99,
-      status: 'PAID',
-      createdAt: '04/05/2026'
-    }
-  ];
+  // Signals para gestionar el estado reactivo del dashboard.
+  // stats contiene las tarjetas de resumen que se pintan en la vista.
+  stats = signal<AdminStat[]>([]);
+  isLoading = signal(false);
+  errorMessage = signal('');
 
-  popularPlans = [
-    {
-      name: 'Colores Premium',
-      purchases: 8
-    },
-    {
-      name: 'Background Themes',
-      purchases: 5
-    },
-    {
-      name: 'Más Tableros',
-      purchases: 4
-    }
-  ];
+  ngOnInit(): void {
+    this.loadStats();
+  }
+
+  loadStats(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+
+    // Consulta las estadísticas generales del panel administrador.
+    // Esta petición requiere token JWT y rol ADMIN.
+    this.adminService.getStats().subscribe({
+      next: (response) => {
+        // Convertimos la respuesta del backend en un array preparado para pintarlo
+        // fácilmente con @for en el HTML.
+        this.stats.set([
+          {
+            label: 'Usuarios',
+            value: String(response.stats.usersCount),
+            description: 'Usuarios registrados'
+          },
+          {
+            label: 'Tableros',
+            value: String(response.stats.boardsCount),
+            description: 'Tableros creados'
+          },
+          {
+            label: 'Notas',
+            value: String(response.stats.notesCount),
+            description: 'Notas creadas'
+          },
+          {
+            label: 'Pedidos',
+            value: String(response.stats.ordersCount),
+            description: 'Compras simuladas'
+          },
+          {
+            label: 'Planes activos',
+            value: String(response.stats.activePlansCount),
+            description: 'Planes disponibles'
+          },
+          {
+            label: 'Ingresos',
+            value: `${Number(response.stats.totalRevenue).toFixed(2)} €`,
+            description: 'Total simulado'
+          }
+        ]);
+
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        console.error('Error cargando estadísticas admin', error);
+        this.errorMessage.set(error.error?.message || 'No se pudieron cargar las estadísticas');
+        this.isLoading.set(false);
+      }
+    });
+  }
 }

@@ -7,7 +7,12 @@
   @if (purchaseCompleted()) {
     <div class="card success-card">
       <h2>Compra completada</h2>
-      <p>Tu pedido se ha generado correctamente. En la versión final aparecerá en tu historial de pedidos.</p>
+      <p>Tu pedido se ha generado correctamente y ya aparece en tu historial.</p>
+
+      @if (createdOrder()) {
+        <p><strong>Número de pedido:</strong> #{{ createdOrder()!.id }}</p>
+        <p><strong>Total:</strong> {{ createdOrder()!.total | currency:'EUR' }}</p>
+      }
 
       <div class="success-actions">
         <a routerLink="/profile/orders" class="btn">Ver mis pedidos</a>
@@ -80,8 +85,12 @@
           </div>
         </div>
 
-        <button type="submit" class="btn pay-btn">
-          Pagar ahora
+        @if (errorMessage()) {
+          <small class="form-error">{{ errorMessage() }}</small>
+        }
+
+        <button type="submit" class="btn pay-btn" [disabled]="isProcessing()">
+          {{ isProcessing() ? 'Procesando...' : 'Pagar ahora' }}
         </button>
       </form>
 
